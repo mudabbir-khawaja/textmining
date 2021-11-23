@@ -1,0 +1,140 @@
+##PRECLASS VIDEOS 
+
+##PRECLASS CLASS 1
+###this is how mutliple objects look like
+
+library ("dplyr") #dplyr is used for data massaging and manipulation
+library (magrittr)
+library (readxl)
+install.packages ("magrittr")
+
+print (mtcars)
+
+
+#Benefit: Easy to read
+a <- filter (mtcars, carb > 2)
+b <- group_by(a, cyl)
+c <- summarise(b, avg_mpg=mean(mpg))
+d <- filter (c, avg_mpg > 15)
+
+
+###Second style 
+##Benefit: Space saved
+z <- filter(
+summarise(
+group_by(
+filter(
+  mtcars, carb >2
+      )
+  ,cyl
+        ),
+avg_mpg =mean (mpg)
+),
+avg_mpg >15
+)
+
+
+## PIPING METHOD 
+## It is a cumulative approach, last line adds all the lines before the last line 
+mtcars %>%
+  filter (carb >1) %>%
+  group_by (cyl) %>%
+  summarise (avg_mpg = mean (mpg))%>%
+  arrange (desc(avg_mpg)) #desc is a additional function to "arrange", it gives the outputs in a descending format 
+
+
+##### Class 1
+### Breakout seesion 
+
+
+library(readxl)
+my_g <- read_excel("german credit card (1).xls")
+piped_1 <- my_g %>%
+  filter (property >3) %>%
+  select (checking, savings)
+  print (my_g)
+  
+
+piped_2 <- my_g %>%
+  group_by (good_bad)%>%
+  summarise (count_obs= n()) #small n = sample size / N= population size 
+print (piped_2)
+
+###Command, SHIFT, M  -> %>%
+
+piped_3 <- my_germ %>%
+  group_by (job)%>%
+  summarise (sum_binary = sum(binary), 
+             avg_housing = mean (housing))
+print (piped_3)
+
+
+piped_4 <- my_germ %>%
+  mutate(risk_score =0.3*amount + 0.4*history + 0.5* age )%>% #creating a new environment "risk_score"
+  filter (risk_score > 100)
+print (piped_4)
+
+
+
+
+##########PRECLASS 2 ########
+#######Building a Ssmall text object
+
+
+my_txt <- c("I think that data is the new bacon", 
+            "Thomas's text was about bacon", 
+            "mine is about nothing")
+
+####Putting the vector into the dataframe
+
+
+library (dplyr)
+mydf <- data.frame (line=1:3, text=my_txt)
+print (mydf)
+
+##install packages 
+
+install.packages ("tidytext")
+install.packages ("tidyverse")
+
+library (tidytext)
+library (tidyverse)
+
+token_list <- mydf %>%
+  unnest_tokens(word,text)
+print (token_list)
+
+#### token frequencies
+
+freq_tokens <- mydf %>%
+  unnest_tokens (word, text) %>%
+  count (word, sort = TRUE)
+print (freq_tokens)
+
+
+### Stop words 
+
+library (stringr)
+
+data (stop_words)
+freq_tokens_nostop <- mydf%>%
+  unnest_tokens (word, text) %>%
+  anti_join (stop_words) %>%
+  count (word, sort= TRUE)
+print (freq_tokens_nostop)
+
+
+### token frequency histogramms
+library (ggplot2)
+freq_hist <- mydf %>%
+  unnest_tokens (word, text) %>%
+  anti_join (stop_words) %>%+
+  count (word, sort = TRUE) %>%
+  mutate (word=reorder (word, n))%>%
+  ggplot (aes(word,n))+
+  geom_col()+
+  xlab(NULL)+
+  coord_flip()
+print (freq_hist)
+
+  
