@@ -1,0 +1,83 @@
+### CLASS 3
+### TEXT & NLP
+
+#install.packages("textreadr")
+library(textreadr)
+
+#Importing all .txt files from one directory # a txt works like a csv file with multiple rows
+setwd("/Users/Mudabbir/Desktop/TXT")
+nm <- list.files(path="/Users/Mudabbir/Desktop/TXT")
+
+#using read document to import the data:
+my_data <- read_document (file=nm[1]) #This comes out as a vector
+my_data_together <- paste(my_data, collapse = " ") # This will give us a concatenated vector
+
+my_txt_text <- do.call(rbind, lapply(nm, function(x) paste(read_document(file=x), collapse = " "))) ##nasty codeline, will combine the whole folder tho
+#Results turn into a semi-structure 
+
+
+#Importing all .doc files from one directory
+#install.packages("textshape") #for some reason textreadr has issues getting textshape
+#install.packages("textreadr")
+
+library(textshape)
+library(textready)
+
+setwd("/Users/Mudabbir/Desktop/Doc")
+nm <- list.files(path="/Users/Mudabbir/Desktop/Doc")
+my_doc_text <- do.call(rbind, lapply(nm, function(x) read_doc(file=x)))
+
+
+# Importing all PDF files from the same folder
+install.packages("pdftools")
+library(pdftools) # we need this library to use pdf_text
+
+setwd("/Users/Mudabbir/Desktop/PDF")
+nm <- list.files(path="/Users/Mudabbir/Desktop/PDF")
+my_pdf_text <- do.call(rbind, lapply(nm, function(x) pdf_text(x)))
+
+
+#Scraping websites from text
+#install.packages("rvest")
+#install.packages("magrittr")
+library(magrittr)
+library(rvest)
+lego_movie <- html("http://www.imdb.com/title/tt1490017/")
+lego_movie %>%
+  html_node("strong span") %>%
+  html_text()
+
+
+###############################################################
+######Querying Twitter for shares, like Trump tweets###########
+###############################################################
+#install the necessary packages
+#install.packages("twitteR")
+#install.packages("tm")
+
+library("twitteR")
+library("tm")
+
+#necessary file for Windows
+setwd("xxxx")
+#download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile="cacert.pem")
+
+#to get your consumerKey and consumerSecret see the twitteR documentation for instructions
+
+consumer_key <- 'Hzb0y2yqQY7tJzkiky2eU1XeW'
+consumer_secret <- 'WO46zbjvRfulXzedBEWDUlsOQgcb2fH2LgNCb0reboRgj88OPP'
+access_token <- '796288515977936897-UcduOdmyjXBfXq3jcY8aU9Q1MUVboNZ'
+access_secret <- 'I0tNMKtql5pdJWP5uTjx1lEomvE4EesLsMDBHomEdWkIo'
+
+setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
+USA <- twitteR::searchTwitter('#USA + #Economy', n = 1000, since = '2015-06-01', retryOnRateLimit = 1e3)
+d = twitteR::twListToDF(USA)
+write.csv(d, file='xxxxx')
+
+EU <- twitteR::searchTwitter('#EU + #Economy', n = 1000, since = '2015-06-01', retryOnRateLimit = 1e3)
+e = twitteR::twListToDF(EU) 
+write.csv(e, file='xxxxx')
+
+Asia <- twitteR::searchTwitter('#Asia + #Economy', n = 1000, since = '2015-06-01', retryOnRateLimit = 1e3)
+a = twitteR::twListToDF(Asia) 
+
